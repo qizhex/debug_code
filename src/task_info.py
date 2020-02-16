@@ -35,15 +35,22 @@ def get_num_train_images(task_name):
   if task_name == 'imagenet':
     return 1281167
   elif task_name == 'svhn':
-    return 73257
+    return 73257 - 4000
   else:
-    assert False
+    assert False, task_name
 
 
 def get_num_eval_images(task_name):
   if task_name == 'imagenet':
     return 50000
   elif task_name == 'svhn':
+    return 4000
+  else:
+    assert False, task_name
+
+
+def get_num_test_images(task_name):
+  if task_name == 'svhn':
     return 26032
   else:
-    assert False
+    assert False, task_name

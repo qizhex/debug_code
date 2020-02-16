@@ -123,7 +123,11 @@ flags.DEFINE_integer(
     'num_train_images', default=None, help='Size of training data set.')
 
 flags.DEFINE_integer(
-    'num_eval_images', default=None, help='Size of evaluation data set.')
+    'num_eval_images', default=None, help='Size of validation data set.')
+
+flags.DEFINE_integer(
+    'num_test_images', default=None, help='Size of test data set.')
+
 
 flags.DEFINE_integer(
     'steps_per_eval', default=1000,
@@ -680,6 +684,8 @@ def main(unused_argv):
     FLAGS.num_train_images = task_info.get_num_train_images(FLAGS.task_name)
   if FLAGS.num_eval_images is None:
     FLAGS.num_eval_images = task_info.get_num_eval_images(FLAGS.task_name)
+  if FLAGS.num_test_images is None:
+    FLAGS.num_test_images = task_info.get_num_test_images(FLAGS.task_name)
 
   steps_per_epoch = (FLAGS.num_train_images /
                      (FLAGS.train_batch_size * FLAGS.label_data_sample_prob))
@@ -753,15 +759,13 @@ def main(unused_argv):
   else:
     tf.logging.info('Using dataset: %s', FLAGS.label_data_dir)
 
-  train_data, eval_data = [
-      data_input.DataInput(
-          is_training=is_training,
-          data_dir=FLAGS.label_data_dir,
-          transpose_input=FLAGS.transpose_input,
-          cache=FLAGS.use_cache and is_training,
-          image_size=input_image_size,
-          use_bfloat16=FLAGS.use_bfloat16) for is_training in [True, False]
-  ]
+  train_data = data_input.DataInput(
+      is_training=True,
+      data_dir=FLAGS.label_data_dir,
+      transpose_input=FLAGS.transpose_input,
+      cache=FLAGS.use_cache,
+      image_size=input_image_size,
+      use_bfloat16=FLAGS.use_bfloat16)
   if FLAGS.mode == 'train' or FLAGS.mode == 'train_and_eval':
     current_step = estimator._load_global_step_from_checkpoint_dir(FLAGS.model_dir)  # pylint: disable=protected-access,line-too-long
 

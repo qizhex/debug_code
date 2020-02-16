@@ -79,7 +79,7 @@ def download_and_extract():
     for split in splits:
       filename = os.path.join(download_folder, '{}_32x32.mat'.format(split))
       urlretrieve(SVHN_DOWNLOAD_URL.format(split), filename)
-      tf.logging.info('downloaded {}'.format(filename) + '\n' * 5)
+      tf.logging.info('downloaded {}'.format(filename))
       filename = os.path.join(download_folder, '{}_32x32.mat'.format(split))
       data_dict = scipy.io.loadmat(tf.gfile.Open(filename, "rb"))
       images = np.transpose(data_dict['X'], [3, 0, 1, 2])

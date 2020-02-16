@@ -39,5 +39,5 @@ python main.py \
     --teacher_softmax_temp=1 \
     --teacher_model_name=efficientnet-b0 \
     --use_bfloat16=False \
-    --teacher_model_path=/usr/local/google/home/qizhex/workspace/noisy_student/noisy_student_test/ckpt/teacher/model.ckpt-109474 \
+    --teacher_model_path=/usr/local/google/home/qizhex/workspace/noisy_student/noisy_student_test/ckpt/teacher_ckpt/model.ckpt \
     --unlabel_data_dir=${unlabel_data_dir}

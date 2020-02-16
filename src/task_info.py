@@ -37,6 +37,7 @@ def get_num_train_images(task_name):
   elif task_name == 'svhn':
     return 73257 - 4000
   else:
+    tf.logging.info(task_name)
     assert False, task_name
 
 
@@ -46,6 +47,7 @@ def get_num_eval_images(task_name):
   elif task_name == 'svhn':
     return 4000
   else:
+    tf.logging.info(task_name)
     assert False, task_name
 
 
@@ -53,4 +55,5 @@ def get_num_test_images(task_name):
   if task_name == 'svhn':
     return 26032
   else:
+    tf.logging.info(task_name)
     assert False, task_name

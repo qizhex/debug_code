@@ -17,5 +17,9 @@ data_dir=data
 
 python proc_svhn.py \
   --task_name=svhn \
-  --raw_data_dir=${data_dir}/raw \
-  --output_dir=${data_dir}/proc
+  --raw_data_dir=data/svhn/raw \
+  --output_dir=data/svhn/proc
+
+mkdir ckpt
+wget https://storage.googleapis.com/noisystudent/ckpts/svhn/teacher_ckpt.tar.gz -O ckpt/teacher_ckpt.tar.gz
+cd ckpt && tar xzvf teacher_ckpt.tar.gz

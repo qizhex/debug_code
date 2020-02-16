@@ -128,9 +128,8 @@ flags.DEFINE_integer(
 flags.DEFINE_integer(
     'num_test_images', default=None, help='Size of test data set.')
 
-
 flags.DEFINE_integer(
-    'steps_per_eval', default=1000,
+    'steps_per_eval', default=2000,
     help=('Controls how often evaluation is performed. Since evaluation is'
           ' fairly expensive, it is advised to evaluate as infrequently as'
           ' possible (i.e. up to --train_steps, which evaluates the model only'
@@ -345,6 +344,7 @@ def model_fn(features, mode, params):
 
   image_shape = image.get_shape().as_list()
   tf.logging.info('image shape: {}'.format(image_shape))
+  is_training = (mode == tf.estimator.ModeKeys.TRAIN)
 
   if mode != tf.estimator.ModeKeys.PREDICT:
     labels = features['label']
@@ -355,18 +355,17 @@ def model_fn(features, mode, params):
   # size flags (--train_batch_size or --eval_batch_size).
   batch_size = params['batch_size']   # pylint: disable=unused-variable
 
-  if FLAGS.unlabel_ratio:
-    unlabel_bsz = features['unl_probs'].shape[0]
+  if FLAGS.unlabel_ratio and is_training:
+    unl_bsz = features['unl_probs'].shape[0]
   else:
-    unlabel_bsz = 0
+    unl_bsz = 0
 
-  lab_bsz = image.shape[0] - unlabel_bsz
+  lab_bsz = image.shape[0] - unl_bsz
   assert lab_bsz == batch_size
 
   metric_dict = {}
   global_step = tf.train.get_global_step()
 
-  is_training = (mode == tf.estimator.ModeKeys.TRAIN)
   has_moving_average_decay = (FLAGS.moving_average_decay > 0)
   # This is essential, if using a keras-derived model.
   tf.keras.backend.set_learning_phase(is_training)
@@ -543,8 +542,8 @@ def model_fn(features, mode, params):
     unl_loss = 0
 
   real_lab_bsz = tf.to_float(lab_bsz) * FLAGS.label_data_sample_prob
-  real_unlabel_bsz = batch_size * FLAGS.label_data_sample_prob * FLAGS.unlabel_ratio
-  data_loss = lab_loss * real_lab_bsz + unl_loss * real_unlabel_bsz
+  real_unl_bsz = batch_size * FLAGS.label_data_sample_prob * FLAGS.unlabel_ratio
+  data_loss = lab_loss * real_lab_bsz + unl_loss * real_unl_bsz
   data_loss = data_loss / real_lab_bsz
 
   # Add weight decay to the loss for non-batch-normalization variables.
@@ -618,10 +617,9 @@ def model_fn(features, mode, params):
 
   eval_metrics = None
   if mode == tf.estimator.ModeKeys.EVAL:
-    if FLAGS.teacher_model_name is None:
-      scaffold_fn = functools.partial(
-          _scaffold_fn,
-          restore_vars_dict=restore_vars_dict) if has_moving_average_decay else None
+    scaffold_fn = functools.partial(
+        _scaffold_fn,
+        restore_vars_dict=restore_vars_dict) if has_moving_average_decay else None
     def metric_fn(labels, logits):
       '''Evaluation metric function. Evaluates accuracy.
 
@@ -782,6 +780,8 @@ def main(unused_argv):
           input_fn=train_data.input_fn,
           max_steps=FLAGS.train_last_step_num,
           hooks=[])
+    tf.logging.info('final result: dev acc: {:.4f}, test acc: {:.4f}'.format(
+        best_dev_acc, test_acc))
 
 if __name__ == '__main__':
   tf.logging.set_verbosity(tf.logging.INFO)

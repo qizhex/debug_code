@@ -127,6 +127,8 @@ def save_tfrecord(data):
         output_filename = '%s_full-%.5d-of-%.5d' % (subset, i, num_shards)
       else:
         output_filename = '%s-%.5d-of-%.5d' % (subset, i, num_shards)
+      if i % 10 == 0:
+        tf.logging.info('saving {}'.format(output_filename))
       writer = tf.python_io.TFRecordWriter(
           os.path.join(output_dir, output_filename))
       for j in range(shard_spacing[i], shard_spacing[i + 1]):

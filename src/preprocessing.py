@@ -179,6 +179,8 @@ def _preprocess_for_train(image, use_bfloat16, image_size=IMAGE_SIZE,
       image = randaugment.distort_image_with_randaugment(
           image, randaug_layer or FLAGS.randaug_layer,
           randaug_mag or FLAGS.randaug_mag)
+    else:
+      assert False
     image = tf.cast(image, dtype=input_image_type)
 
   return image

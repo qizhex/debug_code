@@ -17,10 +17,6 @@
 model_dir=./ckpt/exp_1
 rm -r ${model_dir}
 
-task_name=svhn
-label_data_dir=./data/proc
-unlabel_data_dir=${label_data_dir}/unlabeled
-
 # Training
 python main.py \
     --model_name=efficientnet-b0 \
@@ -31,7 +27,6 @@ python main.py \
     --train_batch_size=128 \
     --iterations_per_loop=1000 \
     --save_checkpoints_steps=1000 \
-    --steps_per_eval=1000 \
     --unlabel_ratio=5 \
     --teacher_softmax_temp=1 \
     --augment_name=v1 \

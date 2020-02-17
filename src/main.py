@@ -129,7 +129,7 @@ flags.DEFINE_integer(
     'num_test_images', default=None, help='Size of test data set.')
 
 flags.DEFINE_integer(
-    'steps_per_eval', default=2000,
+    'steps_per_eval', default=3000,
     help=('Controls how often evaluation is performed. Since evaluation is'
           ' fairly expensive, it is advised to evaluate as infrequently as'
           ' possible (i.e. up to --train_steps, which evaluates the model only'

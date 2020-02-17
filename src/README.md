@@ -1,9 +1,14 @@
-# Noisy Student
+# NoisyStudent
 
 ## Overview
 
-NoisyStudent is a semi-supervised learning method which achieves
-state-of-the-art results on ImageNet.
+NoisyStudent is a semi-supervised learning method which achieves 88.4% top-1
+accuracy on ImageNet (SOTA). NoisyStudent is based on the self-training
+framework with noise injected to the student model.
+
+We are releasing the training code runnable on SVHN. For ImageNet, we are
+experimenting with public image datasets as unlabeled data and will release the
+training code soon.
 
 For a detailed description of technical details and experimental results, please
 refer to our paper:
@@ -16,7 +21,70 @@ Qizhe Xie, Minh-Thang Luong, Eduard Hovy and Quoc V. Le.
 
 *   Feb 16, 2020: Code on SVHN.
 
-## SVHN experiments
+## SVHN Experiments
+
+```shell
+# Download and preprocess SVHN
+python proc_svhn.py \
+  --task_name=svhn \
+  --raw_data_dir=data/svhn/raw \
+  --output_dir=data/svhn/proc
+
+# Download the teacher model trained on labeled data with accuracy 97.9.
+mkdir ckpt
+wget https://storage.googleapis.com/noisystudent/ckpts/svhn/teacher_ckpt.tar.gz -O ckpt/teacher_ckpt.tar.gz
+cd ckpt && tar xzvf teacher_ckpt.tar.gz && cd ..
+
+# Training
+python main.py \
+    --model_name=efficientnet-b0 \
+    --use_tpu=False \
+    --use_bfloat16=False \
+    --task_name=svhn \
+    --mode=train \
+    --train_batch_size=128 \
+    --iterations_per_loop=1000 \
+    --save_checkpoints_steps=1000 \
+    --unlabel_ratio=5 \
+    --teacher_softmax_temp=1 \
+    --augment_name=v1 \
+    --randaug_mag=5 \
+    --final_base_lr=0.0002 \
+    --label_data_dir=./data/svhn/proc \
+    --teacher_model_name=efficientnet-b0 \
+    --teacher_model_path=ckpt/teacher_ckpt/model.ckpt \
+    --model_dir=./ckpt/exp_1 \
+    --unlabel_data_dir=./data/svhn/proc/unlabeled
+
+# Eval (expected accuracy: 98.6 +- 0.1)
+python main.py \
+    --model_name=efficientnet-b0 \
+    --use_tpu=False \
+    --use_bfloat16=False \
+    --task_name=svhn \
+    --mode=eval \
+    --label_data_dir=./data/svhn/proc \
+    --model_dir=./ckpt/exp_1
+```
+
+## ImageNet Results
+
+NoisyStudent leads to significant improvements on supervised learning across
+model sizes.
+
+<table border="0">
+<tr>
+    <td>
+    <img src="./figure/plot_across_size.jpeg" width="100%" />
+    </td>
+</tr>
+</table>
+
+## Pre-trained Models on ImageNet
+
+                  | B0                                                                                                                                  | B1                                                                                                                                  | B2                                                                                                                                  | B3                                                                                                                                  | B4                                                                                                                                  | B5                                                                                                                                  | B6                                                                                                                                  | B7                                                                                                                                  | L2-475                                                                                                                                 | L2
+----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---
+NoisyStudent + RA | 78.8% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b0.tar.gz)) | 81.5% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b1.tar.gz)) | 82.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b2.tar.gz)) | 84.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b3.tar.gz)) | 85.3% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b4.tar.gz)) | 86.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b5.tar.gz)) | 86.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b6.tar.gz)) | 86.9% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b7.tar.gz)) | 88.2%([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2_475.tar.gz)) | 88.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2.tar.gz))
 
 ## Relevant Papers for Citation
 

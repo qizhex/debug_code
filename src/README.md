@@ -2,26 +2,33 @@
 
 ## Overview
 
-NoisyStudent is a semi-supervised learning method which achieves 88.4% top-1
-accuracy on ImageNet (SOTA). NoisyStudent is based on the self-training
-framework with noise injected to the student model.
+NoisyStudent is a semi-supervised learning method which achieves 88.4% top-1 accuracy on ImageNet (SOTA) and surprising gains on robustness and adversarial benchmarks.
+NoisyStudent is based on the self-training framework and trained with 4 simple steps:
+1. Train a classifier on labeled data (teacher).
+2. Infer labels on a much larger unlabeled dataset.
+3. Train a larger classifier on the combined set, adding noise (noisy student).
+4. Go to step 2, with student as teacher
 
-We are releasing the training code runnable on SVHN. For ImageNet, we are
-experimenting with public image datasets as unlabeled data and will release the
+To allow the community to quickly trying out ideas, we first release the training code runnable on SVHN.
+For ImageNet, we are experimenting with public image datasets as unlabeled data and will release the
 training code soon.
 
-For a detailed description of technical details and experimental results, please
-refer to our paper:
 
-[Self-training with Noisy Student improves ImageNet classification.](https://arxiv.org/abs/1911.04252)
+## ImageNet Results
 
-Qizhe Xie, Minh-Thang Luong, Eduard Hovy and Quoc V. Le.
+Here are models trained on ImageNet with JFT-300M unlabeled data:
+|   | B0 | B1 | B2 | B3 | B4 | B5 | B6 | B7 | L2-475 | L2 
+| - | -- | -- | -- | -- | -- | -- | -- | -- | --     | -- 
+NoisyStudent + RA |78.8% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b0.tar.gz)) | 81.5% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b1.tar.gz)) | 82.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b2.tar.gz)) | 84.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b3.tar.gz)) | 85.3% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b4.tar.gz)) | 86.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b5.tar.gz)) | 86.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b6.tar.gz)) | 86.9% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b7.tar.gz)) | 88.2%([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2_475.tar.gz)) | 88.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2.tar.gz))
 
-## Release Notes
+<sup>* L2-475 means the same L2 architecture with input image size 475 (Please set "--input_image_size=475" for using this checkpoint). </sup>
 
-*   Feb 16, 2020: Code on SVHN.
+Checkpoints converted to PyTorch are available [here](https://github.com/rwightman/gen-efficientnet-pytorch).
 
 ## SVHN Experiments
+Our ImageNet experiments requires using JFT-300M which is not publicly
+available. Here we show an implementation of NoisyStudent on SVHN, which boosts the performance of a
+supervised model from 97.9% accuracy to 98.5% accuracy.
 
 ```shell
 # Download and preprocess SVHN
@@ -67,24 +74,7 @@ python main.py \
     --model_dir=./ckpt/exp_1
 ```
 
-You can also use the colab script [noisy_student_svhn.ipynb](https://github.com/google-research/noisystudent/blob/master/noisy_student_svhn.ipynb) to try the method on free Colab GPUs. 
-
-## ImageNet Results
-
-NoisyStudent leads to significant improvements across model sizes.
-<p align="center"> <img src="./figure/plot_across_size.jpeg" width="50%" /> </p>
-
-## Models Trained on ImageNet
-
-Here are models trained on ImageNet with JFT-300M unlabeled data:
-|   | B0 | B1 | B2 | B3 | B4 | B5 | B6 | B7 | L2-475 | L2 
-| - | -- | -- | -- | -- | -- | -- | -- | -- | --     | -- 
-NoisyStudent + RA |78.8% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b0.tar.gz)) | 81.5% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b1.tar.gz)) | 82.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b2.tar.gz)) | 84.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b3.tar.gz)) | 85.3% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b4.tar.gz)) | 86.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b5.tar.gz)) | 86.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b6.tar.gz)) | 86.9% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b7.tar.gz)) | 88.2%([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2_475.tar.gz)) | 88.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2.tar.gz))
-
-<sup>* L2-475 means the same L2 architecture with input image size 475 (Please set "--input_image_size=475" for using this checkpoint). </sup>
-
-
-
+You can also use the colab script [noisystudent_svhn.ipynb](https://github.com/google-research/noisystudent/blob/master/noisystudent_svhn.ipynb) to try the method on free Colab GPUs. 
 
 ## Relevant Papers 
 
@@ -117,7 +107,5 @@ RandAugment: An effective data augmentation noise
   year={2019}
 }
 ```
-
-## Disclaimer
 
 This is not an officially supported Google product.

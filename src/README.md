@@ -13,7 +13,9 @@ For ImageNet checkpoints trained by NoisyStudent, please refer to the [Efficient
 
 ## SVHN Experiments
 Our ImageNet experiments requires using JFT-300M which is not publicly
-available. Here we show an implementation of NoisyStudent on SVHN, which boosts the performance of a
+available. We will release the full code for ImageNet in a few weeks.
+
+Here we show an implementation of NoisyStudent on SVHN, which boosts the performance of a
 supervised model from 97.9% accuracy to 98.5% accuracy.
 
 ```shell

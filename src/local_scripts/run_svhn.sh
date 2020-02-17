@@ -21,22 +21,34 @@ task_name=svhn
 label_data_dir=./data/proc
 unlabel_data_dir=${label_data_dir}/unlabeled
 
+# Training
 python main.py \
     --model_name=efficientnet-b0 \
     --use_tpu=False \
+    --use_bfloat16=False \
     --task_name=svhn \
-    --model_dir=./ckpt/exp_1 \
     --mode=train \
     --train_batch_size=128 \
     --iterations_per_loop=1000 \
     --save_checkpoints_steps=1000 \
     --steps_per_eval=1000 \
-    --use_bfloat16=True \
-    --label_data_dir=./data/svhn/proc \
-    --augment_name=v1 \
-    --unlabel_ratio=1 \
+    --unlabel_ratio=5 \
     --teacher_softmax_temp=1 \
+    --augment_name=v1 \
+    --randaug_mag=5 \
+    --final_base_lr=0.0002 \
+    --label_data_dir=./data/svhn/proc \
     --teacher_model_name=efficientnet-b0 \
-    --use_bfloat16=False \
     --teacher_model_path=ckpt/teacher_ckpt/model.ckpt \
+    --model_dir=./ckpt/exp_1 \
     --unlabel_data_dir=./data/proc/unlabeled
+
+# Eval
+python main.py \
+    --model_name=efficientnet-b0 \
+    --use_tpu=False \
+    --use_bfloat16=False \
+    --task_name=svhn \
+    --mode=eval \
+    --label_data_dir=./data/svhn/proc \
+    --model_dir=./ckpt/exp_1

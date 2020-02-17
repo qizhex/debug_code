@@ -75,7 +75,7 @@ flags.DEFINE_string(
 
 flags.DEFINE_integer(
     'train_steps', default=109474,
-    help=('The number of steps to use for training. 350 epochs'))
+    help=('The number of steps to use for training. 350 epochs on ImageNet.'))
 
 flags.DEFINE_integer(
     'input_image_size', default=None,
@@ -284,12 +284,13 @@ flags.DEFINE_float(
 flags.DEFINE_integer(
     'num_train_shards', default=None, help='Number of training shards.')
 
+flags.DEFINE_integer(
+    'keep_checkpoint_max', default=5, help='Number of training shards.')
+
+
 
 def _scaffold_fn(restore_vars_dict):
-  if FLAGS.mode == "train_and_eval":
-    max_to_keep = 10
-  else:
-    max_to_keep = 10000
+  max_to_keep = FLAGS.keep_checkpoint_max
   saver = tf.train.Saver(restore_vars_dict, max_to_keep=max_to_keep)
   return tf.train.Scaffold(saver=saver)
 
@@ -731,7 +732,7 @@ def main(unused_argv):
       model_dir=FLAGS.model_dir,
       save_checkpoints_steps=max(FLAGS.save_checkpoints_steps, FLAGS.iterations_per_loop),
       log_step_count_steps=FLAGS.log_step_count_steps,
-      keep_checkpoint_max=100000,
+      keep_checkpoint_max=FLAGS.keep_checkpoint_max,
       session_config=tf.ConfigProto(
           graph_options=tf.GraphOptions(
               rewrite_options=rewriter_config_pb2.RewriterConfig(
@@ -765,7 +766,8 @@ def main(unused_argv):
       image_size=input_image_size,
       use_bfloat16=FLAGS.use_bfloat16)
   if FLAGS.mode == 'train' or FLAGS.mode == 'train_and_eval':
-    current_step = estimator._load_global_step_from_checkpoint_dir(FLAGS.model_dir)  # pylint: disable=protected-access,line-too-long
+    current_step = estimator._load_global_step_from_checkpoint_dir(
+        FLAGS.model_dir)  # pylint: disable=protected-access,line-too-long
 
     tf.logging.info(
         'Training for %d steps (%.2f epochs in total). Current'
@@ -782,6 +784,27 @@ def main(unused_argv):
           hooks=[])
     tf.logging.info('final result: dev acc: {:.4f}, test acc: {:.4f}'.format(
         best_dev_acc, test_acc))
+  elif FLAGS.mode == 'eval':
+    input_fn_mapping = {}
+    for subset in ['dev', 'test']:
+      input_fn_mapping[subset] = data_input.DataInput(
+          is_training=False,
+          data_dir=FLAGS.label_data_dir,
+          transpose_input=FLAGS.transpose_input,
+          cache=False,
+          image_size=input_image_size,
+          use_bfloat16=FLAGS.use_bfloat16,
+          subset=subset).input_fn
+      if subset == 'dev':
+        num_images = FLAGS.num_eval_images
+      else:
+        num_images = FLAGS.num_test_images
+      eval_results = est.evaluate(
+          input_fn=input_fn_mapping[subset],
+          steps=num_images // FLAGS.eval_batch_size)
+      tf.logging.info('%s, results: %s', subset, eval_results)
+
+
 
 if __name__ == '__main__':
   tf.logging.set_verbosity(tf.logging.INFO)

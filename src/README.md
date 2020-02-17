@@ -81,6 +81,11 @@ Here are models trained on ImageNet with JFT-300M unlabeled data:
 | - | -- | -- | -- | -- | -- | -- | -- | -- | --     | -- 
 NoisyStudent + RA |78.8% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b0.tar.gz)) | 81.5% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b1.tar.gz)) | 82.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b2.tar.gz)) | 84.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b3.tar.gz)) | 85.3% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b4.tar.gz)) | 86.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b5.tar.gz)) | 86.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b6.tar.gz)) | 86.9% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b7.tar.gz)) | 88.2%([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2_475.tar.gz)) | 88.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2.tar.gz))
 
+<sup>* L2-475 means the same L2 architecture with input image size 475 (Please set "--input_image_size=475" for using this checkpoint). </sup>
+
+
+
+
 ## Relevant Papers 
 
 NoisyStudent

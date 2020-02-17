@@ -67,19 +67,21 @@ python main.py \
     --model_dir=./ckpt/exp_1
 ```
 
+You can also use the colab script noisy_student_svhn.ipynb to try the method on free GPUs. 
+
 ## ImageNet Results
 
 NoisyStudent leads to significant improvements across model sizes.
-<p align="center"> <img src="./figure/plot_across_size.jpeg" width="60%" /> </p>
+<p align="center"> <img src="./figure/plot_across_size.jpeg" width="50%" /> </p>
 
-## Models trained on ImageNet
+## Models Trained on ImageNet
 
-Here are models
+Here are models trained on ImageNet with JFT-300M unlabeled data:
 |   | B0 | B1 | B2 | B3 | B4 | B5 | B6 | B7 | L2-475 | L2 
 | - | -- | -- | -- | -- | -- | -- | -- | -- | --     | -- 
 NoisyStudent + RA |78.8% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b0.tar.gz)) | 81.5% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b1.tar.gz)) | 82.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b2.tar.gz)) | 84.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b3.tar.gz)) | 85.3% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b4.tar.gz)) | 86.1% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b5.tar.gz)) | 86.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b6.tar.gz)) | 86.9% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-b7.tar.gz)) | 88.2%([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2_475.tar.gz)) | 88.4% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkpoints/efficientnet/noisystudent/noisy_student_efficientnet-l2.tar.gz))
 
-## Relevant papers 
+## Relevant Papers 
 
 NoisyStudent:
 

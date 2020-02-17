@@ -67,7 +67,7 @@ python main.py \
     --model_dir=./ckpt/exp_1
 ```
 
-You can also use the colab script noisy_student_svhn.ipynb to try the method on free GPUs. 
+You can also use the colab script [noisy_student_svhn.ipynb](https://github.com/google-research/noisystudent/blob/master/noisy_student_svhn.ipynb) to try the method on free Colab GPUs. 
 
 ## ImageNet Results
 
@@ -83,8 +83,7 @@ NoisyStudent + RA |78.8% ([ckpt](https://storage.googleapis.com/cloud-tpu-checkp
 
 ## Relevant Papers 
 
-NoisyStudent:
-
+NoisyStudent
 ```
 @article{xie2019self,
   title={Self-training with Noisy Student improves ImageNet classification},
@@ -94,8 +93,7 @@ NoisyStudent:
 }
 ```
 
-EfficientNet:
-
+EfficientNet : Our backbone model 
 ```
 @article{tan2019efficientnet,
   title={Efficientnet: Rethinking model scaling for convolutional neural networks},
@@ -105,8 +103,7 @@ EfficientNet:
 }
 ```
 
-RandAugment:
-
+RandAugment: An effective data augmentation noise 
 ```
 @article{cubuk2019randaugment,
   title={RandAugment: Practical data augmentation with no separate search},

@@ -28,13 +28,11 @@ except Exception:
   from urllib.request import urlretrieve
 import utils
 
-
 SVHN_DOWNLOAD_URL = 'http://ufldl.stanford.edu/housenumbers/{}_32x32.mat'
 DOWNLOAD_DATA_FOLDER = 'downloaded_data'
 MERGE_DATA_FOLDER = 'merged_raw_data'
 
 FLAGS = flags.FLAGS
-
 
 flags.DEFINE_string(
     'task_name', 'svhn',
@@ -44,8 +42,6 @@ flags.DEFINE_string(
 flags.DEFINE_string('output_dir', '', 'Path of the tfrecord')
 flags.DEFINE_bool(
     'full_train_data', False, 'Whether to use the full training data')
-
-
 
 
 def save_merged_data(images, labels, split, merge_folder):

@@ -527,16 +527,10 @@ def distort_image_with_randaugment(image, num_layers, magnitude,
   tf.logging.info('Using RandAug.')
   augmentation_hparams = contrib_training.HParams(
       cutout_const=cutout_const, translate_const=translate_const)
-  if FLAGS.imagenet_c_op:
-    available_ops = [
-        'AutoContrast', 'Equalize', 'Invert', 'Rotate', 'Posterize',
-        'Solarize', 'Color',
-        'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'SolarizeAdd']
-  else:
-    available_ops = [
-        'AutoContrast', 'Equalize', 'Invert', 'Rotate', 'Posterize',
-        'Solarize', 'Color', 'Contrast', 'Brightness', 'Sharpness',
-        'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'SolarizeAdd']
+  available_ops = [
+      'AutoContrast', 'Equalize', 'Invert', 'Rotate', 'Posterize',
+      'Solarize', 'Color', 'Contrast', 'Brightness', 'Sharpness',
+      'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'SolarizeAdd']
   if FLAGS.cutout_op:
     available_ops += ['Cutout']
   tf.logging.info('available ops {}'.format(str(available_ops)))

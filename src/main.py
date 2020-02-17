@@ -47,8 +47,7 @@ flags.DEFINE_string(
 flags.DEFINE_string(
     'label_data_dir',
     default=None,
-    help=('The directory where the ImageNet input data is stored. Please see'
-          ' the README.md for the expected data format.'))
+    help=('The directory where the labeled data is stored.'))
 
 flags.DEFINE_string(
     'model_dir', default=None,
@@ -56,18 +55,17 @@ flags.DEFINE_string(
           ' stored.'))
 
 flags.DEFINE_bool(
-    'warm_start', default=False,
-    help='')
+    'init_model', default=False,
+    help='whether to initialize the student')
 
 flags.DEFINE_string(
-    'warm_start_from',
-    default=None,
-    help=(''))
+    'init_model_path', default=None,
+    help='initialize the student from checkpoint')
 
 flags.DEFINE_string(
     'model_name',
     default='efficientnet-b0',
-    help=('The model name among existing configurations.'))
+    help='The model name among existing configurations.')
 
 flags.DEFINE_string(
     'mode', default='train_and_eval',
@@ -75,15 +73,16 @@ flags.DEFINE_string(
 
 flags.DEFINE_integer(
     'train_steps', default=109474,
-    help=('The number of steps to use for training. 350 epochs on ImageNet.'))
+    help='The number of steps to use for training. 350 epochs on ImageNet.')
 
 flags.DEFINE_integer(
     'input_image_size', default=None,
-    help=('Input image size: it depends on specific model name.'))
+    help='Input image size: it depends on specific model name.')
 
 flags.DEFINE_float(
     'train_ratio', default=1.0,
-    help=(''))
+    help=('The train_steps and decay steps are multiplied by train_ratio.'
+          'When train_ratio > 1, training is going to take longer.'))
 
 flags.DEFINE_integer(
     'train_batch_size', default=4096, help='Batch size for training.')
@@ -101,7 +100,7 @@ flags.DEFINE_bool(
 
 flags.DEFINE_string(
     'master', default=None,
-    help='unused')
+    help='not used')
 
 flags.DEFINE_string(
     'tpu', default=None,
@@ -212,7 +211,7 @@ flags.DEFINE_float(
 flags.DEFINE_integer('debug', 0, '')
 
 flags.DEFINE_string(
-    'unlabel_data_dir', default='', help='')
+    'unlabel_data_dir', default='', help='unlabeled data dir')
 
 flags.DEFINE_float(
     'unlabel_ratio', default=0,
@@ -220,30 +219,37 @@ flags.DEFINE_float(
 
 flags.DEFINE_float(
     'teacher_softmax_temp', default=-1,
-    help='')
+    help=('The softmax temperature when teacher computes the predicted distribution.'
+          '-1 means to use an one-hot distribution'))
 
 flags.DEFINE_integer(
-    'train_last_step_num', -1, '')
+    'train_last_step_num', -1,
+    ('Used for finetuning. Only train for train_last_step_num out of the '
+     'total train_steps'))
 
 flags.DEFINE_string(
-    'teacher_model_name', default=None, help='')
+    'teacher_model_name', default=None,
+    help='the model_name of the teacher model')
 
 flags.DEFINE_string(
-    'teacher_model_path', default=None, help='')
+    'teacher_model_path', default=None,
+    help='teacher model checkpoint path')
 
 flags.DEFINE_string(
-    'train_dir_cell', default='', help='')
+    'augment_name', default=None,
+    help='None: normal cropping and flipping. v1: RandAugment')
 
-flags.DEFINE_string(
-    'augment_name', default=None, help='')
-
-flags.DEFINE_bool('test_aug', False, '')
+flags.DEFINE_bool(
+    'remove_aug', False,
+    help='Whether to use center crop for augmentation')
 
 flags.DEFINE_integer(
-    'save_checkpoints_steps', default=1000, help='Batch size for training.')
+    'save_checkpoints_steps', default=1000,
+    help='Batch size for training.')
 
 flags.DEFINE_integer(
-    'fix_layer_num', default=-1, help='')
+    'fix_layer_num', default=-1,
+    help='Fix the first fix_layer_num layers when fintuning')
 
 flags.DEFINE_integer(
     'randaug_mag', default=27, help='randaugment magnitude')
@@ -263,14 +269,10 @@ flags.DEFINE_float(
           'out some labeled images in the loss function. '))
 
 flags.DEFINE_integer(
-    'num_tpu_cores', default=None, help='')
+    'num_tpu_cores', default=None, help='not used')
 
 flags.DEFINE_string(
     'unl_aug', 'default', 'augmentation for unlabeled data.')
-
-
-flags.DEFINE_bool(
-    'imagenet_c_op', default=False, help=('Enable async checkpoint'))
 
 flags.DEFINE_bool(
     'cutout_op', default=True, help='use cutout in RandAugment')
@@ -279,14 +281,13 @@ flags.DEFINE_bool(
     'small_image_model', default=False, help='whether the image size is 32x32')
 
 flags.DEFINE_float(
-    'final_base_lr', default=None, help='final learning rate')
+    'final_base_lr', default=None, help='final learning rate.')
 
 flags.DEFINE_integer(
-    'num_train_shards', default=None, help='Number of training shards.')
+    'num_train_shards', default=None, help='Number of training shards to use.')
 
 flags.DEFINE_integer(
-    'keep_checkpoint_max', default=5, help='Number of training shards.')
-
+    'keep_checkpoint_max', default=5, help='Number of checkpoints to keep.')
 
 
 def _scaffold_fn(restore_vars_dict):
@@ -608,7 +609,7 @@ def model_fn(features, mode, params):
     if not FLAGS.skip_host_call:
       host_call = utils.construct_scalar_host_call(metric_dict)
     scaffold_fn = None
-    if FLAGS.teacher_model_name or FLAGS.warm_start:
+    if FLAGS.teacher_model_name or FLAGS.init_model:
       scaffold_fn = utils.init_from_ckpt(scaffold_fn)
   else:
     train_op = None

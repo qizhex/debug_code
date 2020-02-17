@@ -92,7 +92,7 @@ class TFExampleInput(object):
 
     image = self.image_preprocessing_fn(
         input_tensor=image_bytes,
-        is_training=self.is_training and not FLAGS.test_aug,
+        is_training=self.is_training and not FLAGS.remove_aug,
         image_size=self.image_size,
         use_bfloat16=self.use_bfloat16,
         augment_name=FLAGS.augment_name,
@@ -150,7 +150,7 @@ class TFExampleInput(object):
 
     image = self.image_preprocessing_fn(
         input_tensor=ori_image,
-        is_training=self.is_training and not FLAGS.test_aug,
+        is_training=self.is_training and not FLAGS.remove_aug,
         image_size=self.image_size,
         use_bfloat16=self.use_bfloat16,
         augment_name=augment_name,
@@ -420,8 +420,7 @@ class DataInput(TFExampleInput):
     # this should be greater than number of files
     # shuffle should be able to prevent reading the same files after preemption
     if self.is_training:
-      if FLAGS.debug != 1232193:
-        dataset = dataset.shuffle(len(file_list))
+      dataset = dataset.shuffle(len(file_list))
 
     if self.is_training and not cache:
       dataset = dataset.repeat()

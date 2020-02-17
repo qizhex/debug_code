@@ -367,7 +367,7 @@ def init_from_ckpt(scaffold_fn):
   if FLAGS.teacher_model_name:
     init_ckpt = FLAGS.teacher_model_path
   else:
-    init_ckpt = FLAGS.warm_start_from
+    init_ckpt = FLAGS.init_model_path
   assignment_map, graph_to_ckpt_map = get_assignment_map_from_checkpoint(
       all_var_list, init_ckpt, FLAGS.teacher_model_name is not None)
   if FLAGS.use_tpu:

@@ -9,6 +9,8 @@ NoisyStudent is based on the self-training framework and trained with 4 simple s
 3. Train a larger classifier on the combined set, adding noise (noisy student).
 4. Go to step 2, with student as teacher
 
+For ImageNet checkpoints trained by NoisyStudent, please refer to the [EfficientNet github](https://github.com/tensorflow/tpu/tree/master/models/official/efficientnet#2-using-pretrained-efficientnet-checkpoints).
+
 ## SVHN Experiments
 Our ImageNet experiments requires using JFT-300M which is not publicly
 available. Here we show an implementation of NoisyStudent on SVHN, which boosts the performance of a
@@ -18,7 +20,7 @@ supervised model from 97.9% accuracy to 98.5% accuracy.
 # Download and preprocess SVHN. Download the teacher model trained on labeled data with accuracy 97.9.
 bash local_scripts/prepro.sh
 
-# Training &  Eval (expected accuracy: 98.6 +- 0.1)
+# Training & Eval (expected accuracy: 98.6 +- 0.1)
 bash local_scripts/run_svhn.sh
 ```
 
@@ -36,7 +38,7 @@ NoisyStudent
 }
 ```
 
-EfficientNet : Our backbone model 
+EfficientNet: Our backbone model 
 ```
 @article{tan2019efficientnet,
   title={Efficientnet: Rethinking model scaling for convolutional neural networks},
